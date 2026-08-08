@@ -1,6 +1,10 @@
+import Categories from "@/components/home/Categories";
+
 export default function Home() {
   return (
     <main>
+
+        <Categories />
 
       <section className="relative py-20 overflow-hidden bg-gradient-to-br from-[#8f1748] via-[#be185d] to-[#f472b6]">
 

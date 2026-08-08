@@ -23,19 +23,19 @@ const Hero = () => {
         <div>
 
           <p className="text-pink-200 font-medium tracking-wide mb-5">
-            ✨ Premium Beauty Collection
+            Luxury Skincare Experience
           </p>
 
 
 
-          <h1 className="text-5xl md:text-6xl font-serif font-bold leading-tight text-white">
+          <h1 className="text-5xl md:text-6xl font-serif font-bold leading-tight text-pink-200">
 
-            Glow Naturally,
+            Reveal Your Natural Glow,
 
             <br />
 
             <span className="text-pink-200">
-              Shine Beautifully
+              Embrace Timeless Beauty
             </span>
 
           </h1>
@@ -44,8 +44,9 @@ const Hero = () => {
 
           <p className="mt-6 text-pink-100 text-lg leading-relaxed max-w-lg">
 
-            Discover luxury skincare and beauty products
-            crafted to enhance your natural glow and confidence.
+            Discover premium skincare and beauty essentials
+            crafted with care to nourish your skin and enhance
+            your everyday confidence.
 
           </p>
 
@@ -59,16 +60,16 @@ const Hero = () => {
               href="/products"
               className="bg-white text-[#be185d] px-8 py-3 rounded-full font-medium shadow-lg hover:bg-pink-100 transition"
             >
-              Shop Now →
+              Explore Collection →
             </Link>
 
 
 
             <Link
               href="/categories"
-              className="border border-white text-white px-8 py-3 rounded-full font-medium hover:bg-white/10 transition"
+              className="border border-pink-200 text-white px-8 py-3 rounded-full font-medium hover:bg-white/10 transition"
             >
-              Explore
+              Discover More
             </Link>
 
 
@@ -95,7 +96,7 @@ const Hero = () => {
 
 
             <img
-              src="https://images.unsplash.com/photo-1629380108599-ea06489d66f5?auto=format&fit=crop&w=1200&q=90"
+              src="/rightside2.png"
               alt="Luxury Beauty Skincare"
               className="relative w-[500px] h-[560px] object-cover rounded-[40px] shadow-2xl"
             />
