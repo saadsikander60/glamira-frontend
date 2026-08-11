@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-
-import Navbar from "@/components/layout/Navbar";
-import Hero from "@/components/layout/Hero";
-import Footer from "@/components/layout/Footer";
+import { ToastProvider } from "@/context/ToastContext";
+import { AuthProvider } from "@/context/AuthContext";
 export const metadata: Metadata = {
   title: "Glamira Essence",
   description: "Premium skincare and beauty products",
@@ -17,12 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-
-        <Hero />
-
-        {children}
-        <Footer />
+        <AuthProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );

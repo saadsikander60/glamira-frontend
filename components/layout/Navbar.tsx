@@ -1,9 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Heart, ShoppingCart, User, Flower2 } from "lucide-react";
+import {
+  Search,
+  Heart,
+  ShoppingCart,
+  User,
+  Flower2,
+  LogOut,
+} from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
+  const { user, token, logout } = useAuth();
+
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-gradient-to-r from-[#3b1026]/95 via-[#7a1f4d]/95 to-[#be185d]/90 border-b border-white/10">
       <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
@@ -23,26 +33,11 @@ const Navbar = () => {
 
         <nav className="hidden lg:flex items-center gap-8 text-sm font-medium">
           {[
-            {
-              name: "Home",
-              link: "/",
-            },
-            {
-              name: "Shop",
-              link: "/products",
-            },
-            {
-              name: "Categories",
-              link: "/categories",
-            },
-            {
-              name: "About Us",
-              link: "/about",
-            },
-            {
-              name: "Contact",
-              link: "/contact",
-            },
+            { name: "Home", link: "/" },
+            { name: "Shop", link: "/products" },
+            { name: "Categories", link: "/categories" },
+            { name: "About Us", link: "/about" },
+            { name: "Contact", link: "/contact" },
           ].map((item) => (
             <Link
               key={item.name}
@@ -87,12 +82,35 @@ const Navbar = () => {
             </span>
           </Link>
 
-          <Link
-            href="/login"
-            className="text-white/80 hover:text-white transition"
-          >
-            <User size={24} />
-          </Link>
+          {token ? (
+            <div className="flex items-center gap-3">
+              <Link
+                href="/profile"
+                className="flex items-center gap-2 text-white hover:text-pink-200 transition"
+              >
+                <User size={24} />
+
+                <span className="hidden xl:block text-sm font-medium">
+                  {user?.name || "Account"}
+                </span>
+              </Link>
+
+              <button
+                onClick={logout}
+                className="text-white/80 hover:text-pink-200 transition"
+                title="Logout"
+              >
+                <LogOut size={22} />
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="text-white/80 hover:text-white transition"
+            >
+              <User size={24} />
+            </Link>
+          )}
         </div>
       </div>
     </header>
