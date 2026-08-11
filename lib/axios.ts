@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -9,7 +9,7 @@ const api = axios.create({
 
 // Add Token Automatically
 api.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("token");
 
@@ -21,7 +21,7 @@ api.interceptors.request.use(
     return config;
   },
 
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   },
 );
