@@ -3,7 +3,7 @@ import "./globals.css";
 
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/layout/Hero";
-
+import Footer from "@/components/layout/Footer";
 export const metadata: Metadata = {
   title: "Glamira Essence",
   description: "Premium skincare and beauty products",
@@ -22,6 +22,7 @@ export default function RootLayout({
         <Hero />
 
         {children}
+        <Footer />
       </body>
     </html>
   );
