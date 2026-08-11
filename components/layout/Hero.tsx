@@ -27,22 +27,6 @@ const Hero = () => {
             Discover premium skincare and beauty essentials crafted with care to
             nourish your skin and enhance your everyday confidence.
           </p>
-
-          <div className="flex gap-4 mt-8">
-            <Link
-              href="/products"
-              className="bg-white text-[#be185d] px-8 py-3 rounded-full font-medium shadow-lg hover:bg-pink-100 transition"
-            >
-              Explore Collection →
-            </Link>
-
-            <Link
-              href="/categories"
-              className="border border-pink-200 text-white px-8 py-3 rounded-full font-medium hover:bg-white/10 transition"
-            >
-              Discover More
-            </Link>
-          </div>
         </div>
 
         {/* Right Beauty Image */}
