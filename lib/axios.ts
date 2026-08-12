@@ -7,7 +7,6 @@ const api = axios.create({
   },
 });
 
-// Add Token Automatically
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (typeof window !== "undefined") {
@@ -15,6 +14,13 @@ api.interceptors.request.use(
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+
+    // Let the browser set multipart boundary for FormData uploads
+    if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+      if (config.headers && "Content-Type" in config.headers) {
+        delete config.headers["Content-Type"];
       }
     }
 

@@ -1,98 +1,72 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import ProductCard, { ShopProduct } from "@/components/shop/ProductCard";
+import api from "@/lib/axios";
+
 const FeaturedProducts = () => {
-  const products = [
-    {
-      name: "Vitamin C Brightening Serum",
-      image: "/images/products/vitamin-serum.png",
-      price: "AED 95",
-    },
-    {
-      name: "Hydrating Face Cream",
-      image: "/images/products/hydrating-cream.png",
-      price: "AED 120",
-    },
-    {
-      name: "Luxury Face Cleanser",
-      image: "/images/products/cleanser.png",
-      price: "AED 75",
-    },
-    {
-      name: "Rose Luxury Face Mask",
-      image: "/images/products/rose-mask.png",
-      price: "AED 110",
-    },
-    {
-      name: "Hair Repair Serum",
-      image: "/images/products/hair-serum.png",
-      price: "AED 130",
-    },
-    {
-      name: "Premium Shampoo",
-      image: "/images/products/shampoo.png",
-      price: "AED 90",
-    },
-    {
-      name: "Luxury Perfume",
-      image: "/images/products/perfume.png",
-      price: "AED 180",
-    },
-    {
-      name: "Body Lotion",
-      image: "/images/products/body-lotion.png",
-      price: "AED 85",
-    },
-  ];
+  const [products, setProducts] = useState<ShopProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/products", {
+          params: { limit: 8, page: 1 },
+        });
+        setProducts(response.data.products || []);
+      } catch {
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, []);
 
   return (
-    <section className="relative py-20 overflow-hidden bg-gradient-to-br from-[#2b0a1a] via-[#5c1638] to-[#be185d]">
-      <div className="absolute top-10 right-10 w-72 h-72 bg-pink-300 rounded-full blur-3xl opacity-20"></div>
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#2b0a1a] via-[#5c1638] to-[#be185d] py-20">
+      <div className="absolute top-10 right-10 h-72 w-72 rounded-full bg-pink-300 opacity-20 blur-3xl" />
+      <div className="absolute bottom-0 left-10 h-64 w-64 rounded-full bg-rose-200 opacity-20 blur-3xl" />
 
-      <div className="absolute bottom-0 left-10 w-64 h-64 bg-rose-200 rounded-full blur-3xl opacity-20"></div>
-
-      <div className="relative max-w-7xl mx-auto px-6">
-        <div className="text-center mb-12">
-          <p className="text-pink-200 uppercase tracking-[0.3em] text-sm font-medium">
+      <div className="relative mx-auto max-w-7xl px-6">
+        <div className="mb-12 text-center">
+          <p className="text-sm font-medium tracking-[0.3em] text-pink-200 uppercase">
             Featured Collection
           </p>
-
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mt-4">
+          <h2 className="mt-4 font-serif text-4xl font-bold text-white md:text-5xl">
             Our Best Beauty Picks
           </h2>
-
-          <p className="text-pink-100 mt-4 max-w-xl mx-auto">
+          <p className="mx-auto mt-4 max-w-xl text-pink-100">
             Explore our carefully selected beauty essentials designed to elevate
             your daily routine.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div
-              key={product.name}
-              className="group overflow-hidden rounded-3xl bg-white/10 backdrop-blur-lg border border-white/20 hover:-translate-y-2 transition duration-300"
-            >
-              <div className="h-64 overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                />
-              </div>
+        {loading ? (
+          <p className="text-center text-pink-100">Loading featured products...</p>
+        ) : products.length === 0 ? (
+          <p className="text-center text-pink-100">
+            Products will appear here once the catalog is ready.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        )}
 
-              <div className="p-5">
-                <h3 className="font-serif text-lg font-semibold text-white">
-                  {product.name}
-                </h3>
-
-                <p className="text-pink-200 font-semibold mt-2">
-                  {product.price}
-                </p>
-
-                <button className="mt-4 w-full bg-white text-[#be185d] py-2 rounded-full hover:bg-pink-100 transition">
-                  Add to Cart
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="mt-10 text-center">
+          <Link
+            href="/products"
+            className="inline-flex rounded-full bg-white px-7 py-3 font-semibold text-[#be185d] transition hover:bg-pink-100"
+          >
+            View All Products
+          </Link>
         </div>
       </div>
     </section>

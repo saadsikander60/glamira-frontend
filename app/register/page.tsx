@@ -1,18 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import api from "@/lib/axios";
 import { useToast } from "@/context/ToastContext";
+import { useAuth } from "@/context/AuthContext";
 import { getApiError } from "@/lib/apiError";
 
 export default function RegisterPage() {
   const router = useRouter();
 
   const { showToast } = useToast();
+  const { loading: authLoading, isAuthenticated, isAdmin } = useAuth();
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (isAuthenticated) {
+      router.replace(isAdmin ? "/admin" : "/account");
+    }
+  }, [authLoading, isAuthenticated, isAdmin, router]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -68,7 +77,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#2b0a1a] via-[#5c1638] to-[#be185d] px-6">
+    <main className="site-bg relative flex min-h-screen items-center justify-center overflow-hidden px-6">
       {/* Glow */}
 
       <div className="absolute top-10 left-10 w-72 h-72 bg-pink-300 rounded-full blur-3xl opacity-20"></div>

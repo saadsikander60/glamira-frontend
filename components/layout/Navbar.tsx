@@ -1,95 +1,151 @@
 "use client";
 
 import Link from "next/link";
-import { Search, ShoppingCart, User, Flower2, LogOut } from "lucide-react";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Search,
+  ShoppingCart,
+  User,
+  Flower2,
+  LogOut,
+  Menu,
+  X,
+  Package,
+  MapPin,
+  MessageSquare,
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 
 const Navbar = () => {
-  const { user, token, logout } = useAuth();
-
+  const router = useRouter();
+  const { user, token, logout, isAdmin } = useAuth();
+  const { cartCount } = useCart();
   const [showAbout, setShowAbout] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    const q = search.trim();
+    router.push(q ? `/products?search=${encodeURIComponent(q)}` : "/products");
+    setMobileOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setMobileOpen(false);
+    router.push("/");
+  };
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-xl bg-gradient-to-r from-[#3b1026]/95 via-[#7a1f4d]/95 to-[#be185d]/90 border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between gap-6">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group shrink-0">
-          <div className="w-11 h-11 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shadow-lg group-hover:scale-110 transition">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-gradient-to-r from-[#3b1026]/95 via-[#7a1f4d]/95 to-[#be185d]/90 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4">
+        <Link href="/" className="group flex shrink-0 items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 shadow-lg transition group-hover:scale-110">
             <Flower2 size={26} className="text-pink-100" />
           </div>
-
-          <span className="text-2xl font-serif font-bold text-white tracking-wide">
+          <span className="font-serif text-2xl font-bold tracking-wide text-white">
             Glamira Essence
           </span>
         </Link>
 
-        {/* Search */}
-        <div className="hidden md:flex items-center w-64 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md">
+        <nav className="hidden items-center gap-5 lg:flex">
+          <Link href="/products" className="text-sm font-medium text-pink-100 hover:text-white">
+            Shop
+          </Link>
+          <Link href="/#categories" className="text-sm font-medium text-pink-100 hover:text-white">
+            Categories
+          </Link>
+          <Link href="/contact" className="text-sm font-medium text-pink-100 hover:text-white">
+            Contact
+          </Link>
+        </nav>
+
+        <form
+          onSubmit={handleSearch}
+          className="hidden items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-md md:flex md:w-56 lg:w-64"
+        >
           <input
             type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search beauty products..."
-            className="flex-1 min-w-0 bg-transparent outline-none text-sm text-white placeholder:text-white/60"
+            className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/60"
           />
-
           <button
-            type="button"
-            className="w-9 h-9 shrink-0 rounded-full bg-pink-200 text-[#7a1f4d] flex items-center justify-center hover:bg-white transition"
+            type="submit"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-pink-200 text-[#7a1f4d] transition hover:bg-white"
           >
             <Search size={16} />
           </button>
-        </div>
+        </form>
 
-        {/* Right Section */}
-        <div className="flex items-center gap-3 shrink-0">
-          {/* Login / Profile */}
+        <div className="flex items-center gap-2 shrink-0">
           {token ? (
-            <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 sm:flex">
+              {isAdmin ? (
+                <Link
+                  href="/admin"
+                  className="flex h-10 items-center justify-center rounded-full border border-white/30 bg-white/15 px-4 font-semibold text-white transition hover:bg-white/25"
+                >
+                  Admin
+                </Link>
+              ) : (
+                <Link
+                  href="/account"
+                  className="hidden h-10 items-center justify-center rounded-full border border-white/30 bg-white/10 px-4 font-semibold text-white transition hover:bg-white/20 xl:flex"
+                >
+                  My Account
+                </Link>
+              )}
+
               <Link
-                href="/profile"
-                className="h-10 px-5 rounded-full bg-white text-[#be185d] font-semibold flex items-center gap-2 hover:bg-pink-100 transition"
+                href={isAdmin ? "/admin" : "/account"}
+                className="flex h-10 items-center gap-2 rounded-full bg-white px-4 font-semibold text-[#be185d] transition hover:bg-pink-100"
               >
                 <User size={18} />
-
-                <span className="hidden xl:block">
-                  {user?.name || "Account"}
-                </span>
+                <span className="hidden xl:block">{user?.name || "Account"}</span>
               </Link>
 
               <button
                 type="button"
-                onClick={logout}
-                className="h-10 w-10 rounded-full bg-white text-[#be185d] flex items-center justify-center hover:bg-pink-100 transition"
+                onClick={handleLogout}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#be185d] transition hover:bg-pink-100"
                 title="Logout"
               >
                 <LogOut size={18} />
               </button>
             </div>
           ) : (
-            <Link
-              href="/login"
-              className="h-10 px-5 rounded-full bg-white text-[#be185d] font-semibold flex items-center justify-center hover:bg-pink-100 transition"
-            >
-              Login
-            </Link>
+            <div className="hidden items-center gap-2 sm:flex">
+              <Link
+                href="/register"
+                className="flex h-10 items-center justify-center rounded-full border border-white/30 bg-white/10 px-4 font-semibold text-white transition hover:bg-white/20"
+              >
+                Join
+              </Link>
+              <Link
+                href="/login"
+                className="flex h-10 items-center justify-center rounded-full bg-white px-5 font-semibold text-[#be185d] transition hover:bg-pink-100"
+              >
+                Login
+              </Link>
+            </div>
           )}
 
-          {/* Cart */}
           <Link
             href="/cart"
-            className="relative h-10 px-5 rounded-full bg-white text-[#be185d] font-semibold flex items-center gap-2 hover:bg-pink-100 transition"
+            className="relative flex h-10 items-center gap-2 rounded-full bg-white px-4 font-semibold text-[#be185d] transition hover:bg-pink-100"
           >
             <ShoppingCart size={18} />
-
-            <span>Cart</span>
-
-            {/* Cart Count */}
-            <span className="absolute -top-2 -right-2 bg-pink-200 text-[#7a1f4d] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow">
-              0
+            <span className="hidden sm:inline">Cart</span>
+            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-pink-200 text-xs font-bold text-[#7a1f4d] shadow">
+              {cartCount > 99 ? "99+" : cartCount}
             </span>
           </Link>
 
-          {/* About Us */}
           <div
             className="relative hidden lg:block"
             onMouseEnter={() => setShowAbout(true)}
@@ -97,35 +153,115 @@ const Navbar = () => {
           >
             <button
               type="button"
-              className="h-10 px-5 rounded-full bg-white text-[#be185d] font-semibold flex items-center justify-center hover:bg-pink-100 transition whitespace-nowrap"
+              className="flex h-10 items-center justify-center rounded-full bg-white px-5 font-semibold whitespace-nowrap text-[#be185d] transition hover:bg-pink-100"
             >
               About Us
             </button>
 
-            {/* About Dropdown */}
             {showAbout && (
               <div className="absolute top-10 right-0 pt-3">
-                <div className="w-80 bg-white rounded-3xl shadow-2xl p-6 text-gray-800 border border-pink-100">
-                  <h3 className="text-xl font-serif font-bold text-[#be185d]">
+                <div className="w-80 rounded-3xl border border-pink-100 bg-white p-6 text-gray-800 shadow-2xl">
+                  <h3 className="font-serif text-xl font-bold text-[#be185d]">
                     About Glamira Essence
                   </h3>
-
                   <p className="mt-3 text-sm leading-6 text-gray-600">
-                    Glamira Essence brings premium beauty and skincare
-                    essentials crafted to enhance your natural glow. We believe
-                    in elegance, quality ingredients, and confidence through
-                    beauty.
+                    Glamira Essence brings premium beauty and skincare essentials
+                    crafted to enhance your natural glow. Browse freely as a
+                    guest, then create an account when you are ready to shop.
                   </p>
-
                   <div className="mt-4 text-sm font-medium text-[#be185d]">
-                    ✨ Premium Beauty Collection
+                    Premium Beauty Collection
                   </div>
                 </div>
               </div>
             )}
           </div>
+
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#be185d] sm:hidden"
+            onClick={() => setMobileOpen((prev) => !prev)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
         </div>
       </div>
+
+      {mobileOpen ? (
+        <div className="border-t border-white/10 bg-[#3b1026]/95 px-6 py-4 sm:hidden">
+          <form onSubmit={handleSearch} className="mb-4 flex gap-2">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search products..."
+              className="flex-1 rounded-full bg-white/90 px-4 py-2 text-sm text-gray-800 outline-none"
+            />
+            <button
+              type="submit"
+              className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[#be185d]"
+            >
+              Go
+            </button>
+          </form>
+
+          <div className="flex flex-col gap-3 text-sm text-pink-100">
+            <Link href="/products" onClick={() => setMobileOpen(false)}>
+              Shop
+            </Link>
+            <Link href="/#categories" onClick={() => setMobileOpen(false)}>
+              Categories
+            </Link>
+            <Link href="/contact" onClick={() => setMobileOpen(false)}>
+              Contact
+            </Link>
+            {token ? (
+              <>
+                <Link
+                  href={isAdmin ? "/admin" : "/account"}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2"
+                >
+                  <User size={16} /> {isAdmin ? "Admin Dashboard" : "My Account"}
+                </Link>
+                {!isAdmin ? (
+                  <>
+                    <Link
+                      href="/account/orders"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2"
+                    >
+                      <Package size={16} /> Orders
+                    </Link>
+                    <Link
+                      href="/account/addresses"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-2"
+                    >
+                      <MapPin size={16} /> Addresses
+                    </Link>
+                  </>
+                ) : null}
+                <button type="button" onClick={handleLogout} className="text-left">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" onClick={() => setMobileOpen(false)}>
+                  Login
+                </Link>
+                <Link href="/register" onClick={() => setMobileOpen(false)}>
+                  Create Account
+                </Link>
+              </>
+            )}
+            <Link href="/contact" onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
+              <MessageSquare size={16} /> Support
+            </Link>
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 };

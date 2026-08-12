@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
@@ -11,18 +11,23 @@ import { getApiError } from "@/lib/apiError";
 
 export default function LoginPage() {
   const router = useRouter();
-
   const { showToast } = useToast();
-  const { login } = useAuth();
+  const { login, loading: authLoading, isAuthenticated, isAdmin } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
   const [showPassword, setShowPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (authLoading) return;
+
+    if (isAuthenticated) {
+      router.replace(isAdmin ? "/admin" : "/account");
+    }
+  }, [authLoading, isAuthenticated, isAdmin, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -47,11 +52,14 @@ export default function LoginPage() {
       if (token) {
         login(token, user);
       }
+
       showToast(response.data.message || "Login successful", "success");
 
+      const destination = user?.role === "ADMIN" ? "/admin" : "/account";
+
       setTimeout(() => {
-        router.push("/");
-      }, 1500);
+        router.push(destination);
+      }, 800);
     } catch (error) {
       showToast(getApiError(error), "error");
     } finally {
@@ -59,61 +67,63 @@ export default function LoginPage() {
     }
   };
 
+  if (authLoading || isAuthenticated) {
+    return (
+      <main className="site-bg flex min-h-screen items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+      </main>
+    );
+  }
+
   return (
-    <main className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#2b0a1a] via-[#5c1638] to-[#be185d] px-6">
-      {/* Glow */}
-
-      <div className="absolute top-10 left-10 w-72 h-72 bg-pink-300 rounded-full blur-3xl opacity-20"></div>
-
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-rose-200 rounded-full blur-3xl opacity-20"></div>
+    <main className="site-bg relative flex min-h-screen items-center justify-center overflow-hidden px-6">
+      <div className="absolute top-10 left-10 h-72 w-72 rounded-full bg-pink-300 opacity-20 blur-3xl" />
+      <div className="absolute right-10 bottom-10 h-80 w-80 rounded-full bg-rose-200 opacity-20 blur-3xl" />
 
       <div className="relative w-full max-w-md">
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[35px] p-8 md:p-10 shadow-2xl">
-          <div className="text-center mb-8">
-            <p className="text-pink-200 uppercase tracking-[0.35em] text-sm">
+        <div className="rounded-[35px] border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-xl md:p-10">
+          <div className="mb-8 text-center">
+            <p className="text-sm tracking-[0.35em] text-pink-200 uppercase">
               Welcome Back
             </p>
-
-            <h1 className="text-4xl font-serif font-bold text-white mt-4">
+            <h1 className="mt-4 font-serif text-4xl font-bold text-white">
               Login To Glamira
             </h1>
-
-            <p className="text-pink-100 mt-3 text-sm">
+            <p className="mt-3 text-sm text-pink-100">
               Access your account and continue your beauty journey.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="text-pink-100 text-sm">Email Address</label>
-
+              <label className="text-sm text-pink-100">Email Address</label>
               <input
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 type="email"
+                required
                 placeholder="Enter your email"
-                className="mt-2 w-full px-5 py-3 rounded-full bg-white/90 text-gray-800 outline-none focus:ring-2 focus:ring-pink-300"
+                className="mt-2 w-full rounded-full bg-white/90 px-5 py-3 text-gray-800 outline-none focus:ring-2 focus:ring-pink-300"
               />
             </div>
 
             <div>
-              <label className="text-pink-100 text-sm">Password</label>
-
+              <label className="text-sm text-pink-100">Password</label>
               <div className="relative">
                 <input
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   type={showPassword ? "text" : "password"}
+                  required
                   placeholder="Enter your password"
-                  className="mt-2 w-full px-5 py-3 pr-12 rounded-full bg-white/90 text-gray-800 outline-none focus:ring-2 focus:ring-pink-300"
+                  className="mt-2 w-full rounded-full bg-white/90 px-5 py-3 pr-12 text-gray-800 outline-none focus:ring-2 focus:ring-pink-300"
                 />
-
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-5 top-5 text-[#be185d]"
+                  className="absolute top-5 right-5 text-[#be185d]"
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -123,17 +133,17 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-full bg-white text-[#be185d] font-semibold hover:bg-pink-100 transition disabled:opacity-50"
+              className="w-full rounded-full bg-white py-3 font-semibold text-[#be185d] transition hover:bg-pink-100 disabled:opacity-50"
             >
               {loading ? "Logging In..." : "Login"}
             </button>
           </form>
 
-          <div className="text-center mt-6 text-pink-100 text-sm">
-            Don't have an account?
+          <div className="mt-6 text-center text-sm text-pink-100">
+            Don&apos;t have an account?
             <Link
               href="/register"
-              className="ml-2 text-white font-semibold hover:underline"
+              className="ml-2 font-semibold text-white hover:underline"
             >
               Create Account
             </Link>

@@ -1,5 +1,4 @@
 import Navbar from "@/components/layout/Navbar";
-import Hero from "@/components/layout/Hero";
 import Footer from "@/components/layout/Footer";
 
 export default function ShopLayout({
@@ -8,14 +7,10 @@ export default function ShopLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <div className="site-bg min-h-screen">
       <Navbar />
-
-      <Hero />
-
       {children}
-
       <Footer />
-    </>
+    </div>
   );
 }
