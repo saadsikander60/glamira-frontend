@@ -9,12 +9,14 @@ import {
   ShoppingBag,
   Users,
   MessageSquare,
+  MessagesSquare,
   Star,
   Flower2,
   X,
   LogOut,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useSocket } from "@/context/SocketContext";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -23,6 +25,7 @@ const navItems = [
   { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
+  { label: "Live Chat", href: "/admin/chat", icon: MessagesSquare },
   { label: "Reviews", href: "/admin/reviews", icon: Star },
 ] as const;
 
@@ -35,6 +38,7 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { logout } = useAuth();
+  const { adminUnreadTotal } = useSocket();
 
   const isActive = (href: string) => {
     if (href === "/admin") {
@@ -112,7 +116,18 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
                 }`}
               >
                 <Icon size={18} />
-                {label}
+                <span className="flex-1">{label}</span>
+                {href === "/admin/chat" && adminUnreadTotal > 0 ? (
+                  <span
+                    className={`rounded-full px-1.5 text-[10px] font-bold ${
+                      active
+                        ? "bg-white text-[#be185d]"
+                        : "bg-[#be185d] text-white"
+                    }`}
+                  >
+                    {adminUnreadTotal > 99 ? "99+" : adminUnreadTotal}
+                  </span>
+                ) : null}
               </Link>
             );
           })}

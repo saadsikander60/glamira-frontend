@@ -13,8 +13,10 @@ import {
   Flower2,
   X,
   LogOut,
+  MessageCircle,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useSocket } from "@/context/SocketContext";
 
 const navItems = [
   { label: "Dashboard", href: "/account", icon: LayoutDashboard },
@@ -22,6 +24,7 @@ const navItems = [
   { label: "My Orders", href: "/account/orders", icon: Package },
   { label: "My Addresses", href: "/account/addresses", icon: MapPin },
   { label: "My Reviews", href: "/account/reviews", icon: Star },
+  { label: "Support Chat", href: "/account/support", icon: MessageCircle },
   { label: "Cart", href: "/cart", icon: ShoppingCart },
   { label: "Continue Shopping", href: "/products", icon: Store },
 ] as const;
@@ -35,6 +38,7 @@ export default function AccountSidebar({ open, onClose }: AccountSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { logout, user } = useAuth();
+  const { userUnread } = useSocket();
 
   const isActive = (href: string) => {
     if (href === "/account") return pathname === "/account";
@@ -107,7 +111,18 @@ export default function AccountSidebar({ open, onClose }: AccountSidebarProps) {
                 }`}
               >
                 <Icon size={18} />
-                {label}
+                <span className="flex-1">{label}</span>
+                {href === "/account/support" && userUnread > 0 ? (
+                  <span
+                    className={`rounded-full px-1.5 text-[10px] font-bold ${
+                      active
+                        ? "bg-[#be185d] text-white"
+                        : "bg-white text-[#be185d]"
+                    }`}
+                  >
+                    {userUnread > 99 ? "99+" : userUnread}
+                  </span>
+                ) : null}
               </Link>
             );
           })}

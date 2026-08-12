@@ -12,6 +12,7 @@ const pageTitles: Record<string, string> = {
   "/account/orders": "My Orders",
   "/account/addresses": "My Addresses",
   "/account/reviews": "My Reviews",
+  "/account/support": "Support Chat",
 };
 
 export default function AccountLayout({
