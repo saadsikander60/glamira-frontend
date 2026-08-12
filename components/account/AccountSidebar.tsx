@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   UserRound,
@@ -36,7 +36,6 @@ interface AccountSidebarProps {
 
 export default function AccountSidebar({ open, onClose }: AccountSidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const { logout, user } = useAuth();
   const { userUnread } = useSocket();
 
@@ -44,11 +43,6 @@ export default function AccountSidebar({ open, onClose }: AccountSidebarProps) {
     if (href === "/account") return pathname === "/account";
     if (href === "/cart" || href === "/products") return pathname === href;
     return pathname === href || pathname.startsWith(`${href}/`);
-  };
-
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
   };
 
   return (
@@ -131,7 +125,7 @@ export default function AccountSidebar({ open, onClose }: AccountSidebarProps) {
         <div className="border-t border-white/15 p-4">
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={logout}
             className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 px-3 py-2.5 text-sm font-semibold text-pink-100 transition hover:bg-white/10 hover:text-white"
           >
             <LogOut size={16} />

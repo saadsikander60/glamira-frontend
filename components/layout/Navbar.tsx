@@ -36,7 +36,6 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     setMobileOpen(false);
-    router.push("/");
   };
 
   return (

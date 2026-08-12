@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
   Tags,
   ShoppingBag,
   Users,
-  MessageSquare,
   MessagesSquare,
   Star,
   Flower2,
@@ -24,7 +23,6 @@ const navItems = [
   { label: "Categories", href: "/admin/categories", icon: Tags },
   { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { label: "Customers", href: "/admin/customers", icon: Users },
-  { label: "Messages", href: "/admin/messages", icon: MessageSquare },
   { label: "Live Chat", href: "/admin/chat", icon: MessagesSquare },
   { label: "Reviews", href: "/admin/reviews", icon: Star },
 ] as const;
@@ -36,7 +34,6 @@ interface AdminSidebarProps {
 
 export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const { logout } = useAuth();
   const { adminUnreadTotal } = useSocket();
 
@@ -45,11 +42,6 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
       return pathname === "/admin";
     }
     return pathname === href || pathname.startsWith(`${href}/`);
-  };
-
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
   };
 
   return (
@@ -136,7 +128,7 @@ export default function AdminSidebar({ open, onClose }: AdminSidebarProps) {
         <div className="border-t border-[#f3d4e0] p-4">
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={logout}
             className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#f3d4e0] px-3 py-2.5 text-sm font-semibold text-[#7a1f4d] transition hover:bg-[#fdf2f7] hover:text-[#be185d]"
           >
             <LogOut size={16} />

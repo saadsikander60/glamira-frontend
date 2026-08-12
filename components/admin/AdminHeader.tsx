@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { LogOut, Menu } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -10,13 +9,7 @@ interface AdminHeaderProps {
 }
 
 export default function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
-  const router = useRouter();
   const { user, logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
-  };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[#f3d4e0] bg-white/90 px-4 backdrop-blur-md sm:px-6">
@@ -54,7 +47,7 @@ export default function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
 
         <button
           type="button"
-          onClick={handleLogout}
+          onClick={logout}
           className="inline-flex items-center gap-2 rounded-full border border-[#f3d4e0] bg-white px-3 py-2 text-sm font-medium text-[#7a1f4d] transition hover:border-[#be185d] hover:bg-[#fdf2f7] hover:text-[#be185d]"
         >
           <LogOut size={16} />

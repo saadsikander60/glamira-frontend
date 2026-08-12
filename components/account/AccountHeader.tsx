@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { LogOut, Menu } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -10,13 +9,7 @@ interface AccountHeaderProps {
 }
 
 export default function AccountHeader({ title, onMenuClick }: AccountHeaderProps) {
-  const router = useRouter();
   const { user, logout } = useAuth();
-
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
-  };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/15 bg-[#3b1026]/70 px-4 backdrop-blur-md sm:px-6">
@@ -47,7 +40,7 @@ export default function AccountHeader({ title, onMenuClick }: AccountHeaderProps
         </div>
         <button
           type="button"
-          onClick={handleLogout}
+          onClick={logout}
           className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-2 text-sm font-medium text-white transition hover:bg-white/20"
         >
           <LogOut size={16} />

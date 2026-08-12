@@ -81,6 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("user");
     setToken(null);
     setUser(null);
+    // Hard navigate so /admin or /account layouts cannot race to /login
+    window.location.href = "/";
   };
 
   const isAuthenticated = Boolean(token && user);
