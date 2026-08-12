@@ -57,6 +57,11 @@ export function SocketProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUnlockedRef = useRef(false);
   const socketRef = useRef<Socket | null>(null);
+  const isAdminRef = useRef(isAdmin);
+  const playNotifySoundRef = useRef<() => void>(() => undefined);
+  const showBrowserNotificationRef = useRef<(title: string, body: string) => void>(
+    () => undefined,
+  );
 
   const setMuted = useCallback((value: boolean) => {
     setMutedState(value);
@@ -134,6 +139,12 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  useEffect(() => {
+    isAdminRef.current = isAdmin;
+    playNotifySoundRef.current = playNotifySound;
+    showBrowserNotificationRef.current = showBrowserNotification;
+  }, [isAdmin, playNotifySound, showBrowserNotification]);
+
   // Bootstrap unread counts via REST
   useEffect(() => {
     if (loading) return;
@@ -171,7 +182,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
     };
   }, [loading, isAuthenticated, token, isAdmin]);
 
-  // Manage socket lifecycle
+  // Manage socket lifecycle — keep deps stable (auth only)
   useEffect(() => {
     if (loading) return;
 
@@ -206,13 +217,13 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       unreadForAdmin?: number;
       conversationId?: string;
     }) => {
-      if (typeof payload.unreadForUser === "number" && !isAdmin) {
+      if (typeof payload.unreadForUser === "number" && !isAdminRef.current) {
         setUserUnread(payload.unreadForUser);
       }
     };
 
     const refreshAdminUnread = () => {
-      if (!isAdmin) return;
+      if (!isAdminRef.current) return;
       api
         .get("/chat/admin/unread-total")
         .then((res) => setAdminUnreadTotal(res.data.unreadTotal || 0))
@@ -228,7 +239,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       message?: { senderRole?: string; text?: string; messageType?: string };
       conversation?: { user?: { name?: string } | string };
     }) => {
-      if (!isAdmin) return;
+      if (!isAdminRef.current) return;
       if (payload.message?.senderRole !== "USER") return;
 
       // Prefer page-level handlers when Live Chat is open
@@ -240,12 +251,12 @@ export function SocketProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      playNotifySound();
+      playNotifySoundRef.current();
       const userName =
         typeof payload.conversation?.user === "object"
           ? payload.conversation.user?.name || "Customer"
           : "Customer";
-      showBrowserNotification(
+      showBrowserNotificationRef.current(
         `New message from ${userName}`,
         payload.message.text ||
           (payload.message.messageType === "IMAGE"
@@ -271,14 +282,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
       next.disconnect();
       if (socketRef.current === next) socketRef.current = null;
     };
-  }, [
-    loading,
-    isAuthenticated,
-    token,
-    isAdmin,
-    playNotifySound,
-    showBrowserNotification,
-  ]);
+  }, [loading, isAuthenticated, token]);
 
   const value = useMemo(
     () => ({
